@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { query } = require("express");
 const PORT = process.env.PORT || 5000;
 
 
@@ -71,6 +72,15 @@ async function run() {
             const cursor = await reviewCollection.insertOne(data)
             res.send(cursor)
         })
+
+        app.delete("/deleteReview/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await reviewCollection.deleteOne(query);
+            res.send(result);
+
+        })
+
         // review end
 
 
