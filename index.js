@@ -48,14 +48,30 @@ async function run() {
 
         // service end
 
-        // comments start
+        // review start
+
+
+        app.get("/review", async (req, res) => {
+            const id = req.query.id;
+            const email = req.query.email;
+            let query = {}
+            if (req.query.id) {
+                query = { serviceId: id }
+            }
+            if (req.query.email) {
+                query = { email: email }
+            }
+            const cursor = reviewCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
 
         app.post("/addComment", async (req, res) => {
             const data = req.body
             const cursor = await reviewCollection.insertOne(data)
             res.send(cursor)
         })
-        // comments end
+        // review end
 
 
 
