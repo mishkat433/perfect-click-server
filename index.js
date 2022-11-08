@@ -47,6 +47,12 @@ async function run() {
             res.send(result)
         })
 
+        app.post("/addServices", async (req, res) => {
+            const data = req.body
+            const cursor = await servicesCollection.insertOne(data)
+            res.send(cursor)
+        })
+
         // service end
 
         // review start
@@ -78,7 +84,6 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const result = await reviewCollection.deleteOne(query);
             res.send(result);
-
         })
 
         // review end
