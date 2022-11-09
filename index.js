@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const { query } = require("express");
 const PORT = process.env.PORT || 5000;
@@ -24,6 +25,14 @@ async function run() {
         const reviewCollection = client.db("perfectClick").collection("review");
         const albumCollection = client.db("perfectClick").collection("album");
         const workInfoCollection = client.db("perfectClick").collection("workInfo");
+
+
+        app.post("/jwt", (req, res) => {
+            const userToken = req.body
+            const token = jwt.sign(userToken, process.env.JWT_TOKEN_SECRET, { expiresIn: "1d" })
+            res.send({ token })
+        })
+
 
         // service start
 
