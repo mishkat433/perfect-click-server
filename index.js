@@ -66,7 +66,6 @@ async function run() {
 
         // review start
 
-
         app.get("/review", async (req, res) => {
             const id = req.query.id;
             const email = req.query.email;
@@ -89,6 +88,20 @@ async function run() {
             const data = req.body
             const cursor = await reviewCollection.insertOne(data)
             res.send(cursor)
+        })
+
+        app.put("/updateService/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const review = req.body
+            const option = { upsert: true };
+            const updateReview = {
+                $set: {
+                    comment: review.comment
+                }
+            }
+            const result = await reviewCollection.updateOne(query, updateReview, option)
+            res.send(result);
         })
 
         app.delete("/deleteReview/:id", async (req, res) => {
