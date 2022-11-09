@@ -18,6 +18,21 @@ app.get("/", (req, res) => {
     res.send("server is running")
 })
 
+function tokenVerify(req, res, next) {
+    const authHeader = req.headers.authorization
+    if (!authHeader) {
+        return res.status(401).send({ message: 'unauthorized access' });
+    }
+    const token = authHeader.split(' ')[1]
+    jwt.verify(token, process.env.JWT_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).send({ message: 'Forbidden access' });
+        }
+        req.decoded = decoded;
+        next()
+    })
+}
+
 
 async function run() {
     try {
@@ -68,17 +83,23 @@ async function run() {
 
         app.get("/review", async (req, res) => {
             const id = req.query.id;
-            const email = req.query.email;
             let query = {}
-            if (req.query.id) {
-                const filter = { serviceId: id }
-                const cursor = reviewCollection.find(filter).sort({ time: -1 })
-                const result = await cursor.toArray()
-                return res.send(result)
+            const filter = { serviceId: id }
+            const cursor = reviewCollection.find(filter).sort({ time: -1 })
+            const result = await cursor.toArray()
+            return res.send(result)
+        })
+
+        app.get("/myReview", tokenVerify, async (req, res) => {
+            const email = req.query.email;
+
+            const decoded = req.decoded
+
+            if (decoded.email !== email) {
+                return res.status(403).send({ message: "unauthorized access" })
             }
-            if (req.query.email) {
-                query = { email: email }
-            }
+
+            const query = { email: email }
             const cursor = reviewCollection.find(query)
             const result = await cursor.toArray()
             res.send(result)
