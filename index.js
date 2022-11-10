@@ -85,7 +85,7 @@ async function run() {
             const id = req.query.id;
             let query = {}
             const filter = { serviceId: id }
-            const cursor = reviewCollection.find(filter).sort({ _id: -1 })
+            const cursor = reviewCollection.find(filter).sort({ time: -1 })
             const result = await cursor.toArray()
             return res.send(result)
         })
@@ -95,7 +95,6 @@ async function run() {
             const decoded = req.decoded
             let query = {}
             if (decoded.email !== null) {
-
                 if (decoded.email !== user) {
                     console.log("logout");
                     return res.status(403).send({ message: "unauthorized access" })
